@@ -8,11 +8,10 @@ import { generateAudio } from './api/audioGeneration';
 import { generateVideo } from './api/videoGeneration';
 import { renderFinalVideo } from './api/remotionRender';
 
-// Types for your data flow (adjust based on your needs)
 interface InputData {
-  // Define your input data structure
   prompt: string;
-  // Add other configuration parameters
+  prefixPrompt: string;
+  agent: string;
 }
 
 interface GenerationResult {
