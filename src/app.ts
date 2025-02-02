@@ -77,6 +77,7 @@ function parseTextResult(textResult: string) {
   return {
     audioScript: '',
     videoConfig: {}
+    
   };
 }
 
