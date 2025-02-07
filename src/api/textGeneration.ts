@@ -1,34 +1,22 @@
-// TODO: Import your preferred xAI client/SDK and add API key
-// import { YourAIClient } from 'your-ai-package';
+export async function generateText(prompt: string): Promise<string> {
+  const response = await fetch("https://api.x.ai/v1/chat/completions", {
+    method: "POST",
+    headers: {
+      "Authorization": `Bearer ${process.env.GROK_API_KEY}`, // Fixed API key access
+      "Content-Type": "application/json"
+    },
+    body: JSON.stringify({
+      model: "grok-2-1212",
+      messages: [
+        { role: "user", content: prompt }
+      ]
+    })
+  });
 
-interface TextGenerationOptions {
-    prompt: string;
-    prefixPrompt: string;
-}
-
-export async function generateText(prompt: string, options?: Partial<TextGenerationOptions>): Promise<string> {
-    try {
-        // Combine prefix and prompt with a colon
-        const fullPrompt = options?.prefixPrompt 
-            ? `${options.prefixPrompt}: ${prompt}`
-            : prompt;
-
-        // TODO: Replace this with your actual API call
-        // Example structure:
-        // const response = await aiClient.createCompletion({
-        //     model: "your-chosen-model",
-        //     prompt: fullPrompt,
-        //     // other parameters as needed
-        // });
-
-        // Temporary placeholder
-        throw new Error('API integration not yet implemented');
-
-        // TODO: Return the actual API response
-        // return response.choices[0].text;
-
-    } catch (error) {
-        console.error('Text generation failed:', error);
-        throw error;
-    }
+  const data = await response.json();
+  
+  // Log the entire response for debugging
+  console.log("Full API Response:", data);
+  
+  return data.choices[0].message.content;
 }

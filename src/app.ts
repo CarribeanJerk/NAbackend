@@ -1,17 +1,15 @@
 import express, { Application, Request, Response } from 'express';
 import { promises as fs } from 'fs';
 import path from 'path';
-
-// Import your API handlers (to be created)
+import { fetch } from 'bun';
+import { config } from 'dotenv';
 import { generateText } from './api/textGeneration';
-import { generateAudio } from './api/audioGeneration';
-import { generateVideo } from './api/videoGeneration';
-import { renderFinalVideo } from './api/remotionRender';
+
+config();
 
 interface InputData {
   prompt: string;
   prefixPrompt: string;
-  agent: string;
 }
 
 interface GenerationResult {
@@ -30,12 +28,16 @@ async function ensureDirectories() {
     await fs.mkdir(path.join(process.cwd(), dir), { recursive: true });
   }
 }
+ensureDirectories()
 
 // Main processing function
 async function processGeneration(inputData: InputData): Promise<GenerationResult> {
   try {
-    // 1. Generate text from input
-    const textResult = await generateText(inputData.prompt);
+    // Combine the prompts
+    const finalPrompt = `${inputData.prefixPrompt}: ${inputData.prompt}`;
+    
+    // Generate text using combined prompt
+    const textResult = await generateText(finalPrompt);
     // TODO: Implement text parsing logic to separate audio script from video configuration
     const { audioScript, videoConfig } = parseTextResult(textResult);
 
@@ -71,43 +73,13 @@ async function processGeneration(inputData: InputData): Promise<GenerationResult
   }
 }
 
-// Helper function to parse text generation result
-function parseTextResult(textResult: string) {
-  // TODO: Implement parsing logic to separate audio script from video configuration
-  return {
-    audioScript: '',
-    videoConfig: {}
-  };
-}
+// here's where we fill input in and sheit
+const exampleInput: InputData = {
+  prompt: "Or Bosnia",
+  prefixPrompt: "Croatia"
+};
 
-// Main endpoint to handle generation requests
-app.post('/generate', async (req: Request, res: Response) => {
-  try {
-    await ensureDirectories();
-    
-    const inputData: InputData = req.body;
-    // TODO: Add input validation
-
-    const result = await processGeneration(inputData);
-
-    if (result.success) {
-      res.json({ 
-        success: true, 
-        outputPath: result.outputPath 
-      });
-    } else {
-      res.status(500).json({ 
-        success: false, 
-        error: result.error 
-      });
-    }
-  } catch (error) {
-    res.status(500).json({ 
-      success: false, 
-      error: error instanceof Error ? error.message : 'Unknown error occurred' 
-    });
-  }
-});
+processGeneration(exampleInput).then(result => console.log(result));
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
