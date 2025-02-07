@@ -1,7 +1,6 @@
 import express, { Application, Request, Response } from 'express';
 import { promises as fs } from 'fs';
 import path from 'path';
-import { fetch } from 'bun';
 import { config } from 'dotenv';
 import { generateText } from './api/textGeneration';
 
