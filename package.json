@@ -22,6 +22,7 @@
     "@types/node": "^22.10.7",
     "nodemon": "^3.1.9",
     "ts-node-dev": "^2.0.0",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "@types/bun": "latest"
   }
 }
