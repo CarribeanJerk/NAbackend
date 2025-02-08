@@ -17,6 +17,13 @@ interface GenerationResult {
   error?: string;
 }
 
+interface ParsedSegments {
+  finalScript: string;
+  Headline_0: string;
+  Headline_1: string;
+  Headline_2: string;
+}
+
 const app: Application = express();
 app.use(express.json());
 
@@ -50,25 +57,33 @@ async function processGeneration(inputData: InputData): Promise<GenerationResult
     const finalPrompt = `${inputData.prefixPrompt}: ${inputData.prompt}`;
     const textResult = await generateText(finalPrompt);
     
-    // Parse the text result into segments
-    const [Script, Headline_0, Headline_1, Headline_2] = textResult.split('&').map(segment => segment.trim());
+    // Update the exported variables
+    [finalScript, Headline_0, Headline_1, Headline_2] = textResult.split('&').map(segment => segment.trim());
     
-    if (!Script || !Headline_0 || !Headline_1 || !Headline_2) {
+    // Create the segments object
+    const parsedSegments: ParsedSegments = {
+      finalScript,
+      Headline_0,
+      Headline_1,
+      Headline_2
+    };
+
+    if (!finalScript || !Headline_0 || !Headline_1 || !Headline_2) {
       throw new Error('Text generation result missing required segments');
     }
 
     // Debug log to verify parsing
     console.log({
-      Script,
+      finalScript,
       Headline_0,
       Headline_1,
       Headline_2
     });
+    
 
     // 3. Generate base video using Hedra
     const videoResult = await generateVideo({
-      audioPath: audioResult.audioPath,
-      // Add other necessary parameters
+     
     });
     // TODO: Add error handling for video generation
 
@@ -103,3 +118,8 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => {
   console.log(`Server is running on http://localhost:${PORT}`);
 });
+
+export let finalScript: string = '{finalScript}';
+export let Headline_0: string = '';
+export let Headline_1: string = '';
+export let Headline_2: string = '';
