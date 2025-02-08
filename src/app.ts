@@ -22,7 +22,7 @@ app.use(express.json());
 
 // Utility function to ensure output directories exist
 async function ensureDirectories() {
-  const dirs = ['output', 'output/audio', 'output/video', 'output/final'];
+  const dirs = ['output', 'output/video', 'output/final'];
   for (const dir of dirs) {
     await fs.mkdir(path.join(process.cwd(), dir), { recursive: true });
   }
@@ -32,10 +32,14 @@ ensureDirectories()
 // here's where we fill input in and sheit
 const Input: InputData = {
   prompt: "noah solomon is a dastardly crypto scammer and he also fucks men",
-  prefixPrompt: `Please give me a nightly news report monologue between 120-140 words, 
+  prefixPrompt: `Please give me a nightly news report monologue between 150-165 words, 
   make it totally serious with no jokes, but use a lot of swearing and random words like "fuckers",
   "simp" (make sure to use these slang words properly if at all), "gay", "cringe", "mega cringe", "jeets", etc.
-  make it about the following user input: `
+  make it about the following user input, and generate me three short (between 3 and 7 words) headlines that
+  one might flash on the screen of a news channel related to the user input, use the same language and tone
+  as the main script, and please make sure the output is formatted like so; the main text- ONLY the script with 
+  no labels, & sign in between the main text and the first headline, and an & sign soley seperating each headline 
+  thereafter. It is very important you return the result this way. Ok, here is the user input material: `
 };
 
 processGeneration(Input).then(result => console.log(result));
@@ -45,12 +49,21 @@ async function processGeneration(inputData: InputData): Promise<GenerationResult
   try {
     const finalPrompt = `${inputData.prefixPrompt}: ${inputData.prompt}`;
     const textResult = await generateText(finalPrompt);
+    
+    // Parse the text result into segments
+    const [Script, Headline_0, Headline_1, Headline_2] = textResult.split('&').map(segment => segment.trim());
+    
+    if (!Script || !Headline_0 || !Headline_1 || !Headline_2) {
+      throw new Error('Text generation result missing required segments');
+    }
 
-
-
-    // 2. Generate audio from parsed text
-    const audioResult = await generateAudio(audioScript);
-    // TODO: Add error handling for audio generation
+    // Debug log to verify parsing
+    console.log({
+      Script,
+      Headline_0,
+      Headline_1,
+      Headline_2
+    });
 
     // 3. Generate base video using Hedra
     const videoResult = await generateVideo({
