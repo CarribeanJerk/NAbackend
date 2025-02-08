@@ -29,16 +29,24 @@ async function ensureDirectories() {
 }
 ensureDirectories()
 
+// here's where we fill input in and sheit
+const Input: InputData = {
+  prompt: "noah solomon is a dastardly crypto scammer and he also fucks men",
+  prefixPrompt: `Please give me a nightly news report monologue between 120-140 words, 
+  make it totally serious with no jokes, but use a lot of swearing and random words like "fuckers",
+  "simp" (make sure to use these slang words properly if at all), "gay", "cringe", "mega cringe", "jeets", etc.
+  make it about the following user input: `
+};
+
+processGeneration(Input).then(result => console.log(result));
+
 // Main processing function
 async function processGeneration(inputData: InputData): Promise<GenerationResult> {
   try {
-    // Combine the prompts
     const finalPrompt = `${inputData.prefixPrompt}: ${inputData.prompt}`;
-    
-    // Generate text using combined prompt
     const textResult = await generateText(finalPrompt);
-    // TODO: Implement text parsing logic to separate audio script from video configuration
-    const { audioScript, videoConfig } = parseTextResult(textResult);
+
+
 
     // 2. Generate audio from parsed text
     const audioResult = await generateAudio(audioScript);
@@ -72,13 +80,6 @@ async function processGeneration(inputData: InputData): Promise<GenerationResult
   }
 }
 
-// here's where we fill input in and sheit
-const exampleInput: InputData = {
-  prompt: "Or Bosnia",
-  prefixPrompt: "Croatia"
-};
-
-processGeneration(exampleInput).then(result => console.log(result));
 
 // Health check endpoint
 app.get('/health', (req: Request, res: Response) => {
