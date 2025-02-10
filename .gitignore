@@ -6,7 +6,6 @@ dist/
 .env.development.local
 .env.test.local
 .env.production.local
-output/.mp4
 # TypeScript
 *.tsbuildinfo
 
@@ -49,3 +48,5 @@ coverage/
 
 # Remotion
 .cache/
+
+output/.mp4
