@@ -73,7 +73,6 @@ async function processGeneration(inputData: InputData): Promise<GenerationResult
 
     // 3. Generate base video using Hedra
     const videoResult = await generateVideo();
-    // TODO: Add error handling for video generation
 
     // 4. Compile final video with Remotion
     const finalVideo = await renderFinalVideo({
