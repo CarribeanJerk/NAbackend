@@ -6,7 +6,6 @@ import { generateText } from './api/textGeneration';
 import { generateVideo } from './api/videoGeneration';
 
 config();
-
 interface InputData {
   prompt: string;
   prefixPrompt: string;
@@ -21,7 +20,7 @@ interface GenerationResult {
 const app: Application = express();
 app.use(express.json());
 
-// Utility function to ensure output directories exist
+// Util function for dirs
 async function ensureDirectories() {
   const dirs = ['output', 'output/video', 'output/final'];
   for (const dir of dirs) {
@@ -53,33 +52,22 @@ processGeneration(Input).then(result => console.log(result));
 async function processGeneration(inputData: InputData): Promise<GenerationResult> {
   try {
     const finalPrompt = `${inputData.prefixPrompt}: ${inputData.prompt}`;
+    
     const textResult = await generateText(finalPrompt);
     
-    // Update the exported variables
+    // Slicin and dicin
     [finalScript, Headline_0, Headline_1, Headline_2] = textResult.split('&').map(segment => segment.trim());
 
     if (!finalScript || !Headline_0 || !Headline_1 || !Headline_2) {
       throw new Error('Text generation result missing required segments');
     }
-
-    // Debug log to verify parsing
-    console.log({
-      finalScript,
-      Headline_0,
-      Headline_1,
-      Headline_2
-    });
     
-
-    // 3. Generate base video using Hedra
     const videoResult = await generateVideo();
 
-    // 4. Compile final video with Remotion
     const finalVideo = await renderFinalVideo({
       baseVideoPath: videoResult.videoPath,
       audioPath: audioResult.audioPath,
       configuration: videoConfig,
-      // Add other necessary parameters
     });
 
     return {

@@ -3,7 +3,7 @@ import path from 'path';
 import { finalScript } from '../app';
 import { promises as fs } from 'fs';
 
-export async function generateVideo(): Promise<{ videoPath: string }> {
+export async function generateVideo(): Promise<{ videoPath: string; remotionPath: string }> {
   return new Promise((resolve, reject) => {
     const pythonScript = path.join(__dirname, 'hedra-api-starter/main.py');
     const outputDir = path.join(process.cwd(), 'output', 'video');
@@ -36,13 +36,22 @@ export async function generateVideo(): Promise<{ videoPath: string }> {
     pythonProcess.on('close', async (code: number) => {
       if (code === 0) {
         try {
-          // Move the generated video to output directory
+          // Move to output/video first
           const sourceVideo = path.join(process.cwd(), `${jobId}.mp4`);
           const targetVideo = path.join(outputDir, `${jobId}.mp4`);
           await fs.rename(sourceVideo, targetVideo);
-          resolve({ videoPath: targetVideo });
+
+          // Copy to Remotion public folder
+          const remotionPublic = path.join(process.cwd(), 'final-video', 'public');
+          const remotionVideo = path.join(remotionPublic, 'hedra-output.mp4');
+          await fs.copyFile(targetVideo, remotionVideo);
+
+          resolve({ 
+            videoPath: targetVideo,
+            remotionPath: 'hedra-output.mp4' // Relative path for Remotion
+          });
         } catch (error) {
-          reject(new Error(`Failed to move video file: ${error}`));
+          reject(new Error(`Failed to handle video file: ${error}`));
         }
       } else {
         reject(new Error(`Python process exited with code ${code}`));
