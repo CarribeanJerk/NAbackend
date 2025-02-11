@@ -1,9 +1,15 @@
-import {AbsoluteFill, Video} from 'remotion';
+import React from 'react';
 
-export const MyComposition = () => {
+const VideoComponent: React.FC<{ videoSrc: string }> = ({ videoSrc }) => {
   return (
-    <AbsoluteFill>
-      <Video src="/hedra-output.mp4" />
-    </AbsoluteFill>
+    <div style={{ textAlign: 'center' }}>
+      <h2>Video Source: {videoSrc}</h2>
+      <video width="896" height="512" controls autoPlay muted>
+        <source src={videoSrc} type="video/mp4" />
+        <p>Your browser does not support the video tag or the video failed to load.</p>
+      </video>
+    </div>
   );
 };
+
+export default VideoComponent;

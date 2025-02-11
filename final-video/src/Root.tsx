@@ -1,17 +1,21 @@
-import { Composition } from "remotion";
-import { MyComposition } from "./Composition";
+import React from 'react';
+import { Composition } from 'remotion';
+import VideoComponent from './Composition'; // Import VideoComponent directly
 
-export const RemotionRoot: React.FC = () => {
+const Root: React.FC = () => {
+  const videoSrc = '/home/joshs/NAbackend/final-video/public/hedra-output-fixed.mp4'; // Adjust the path if necessary
+
   return (
-    <>
-      <Composition
-        id="MyComp"
-        component={MyComposition}
-        durationInFrames={60}
-        fps={30}
-        width={1280}
-        height={720}
-      />
-    </>
+    <Composition
+      id="MyComp"
+      component={VideoComponent} // Pass the VideoComponent here directly
+      width={896}
+      height={512}
+      fps={30}
+      durationInFrames={1440}
+      defaultProps={{ videoSrc }} // Pass the videoSrc to the component
+    />
   );
 };
+
+export default Root;
